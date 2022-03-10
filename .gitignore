@@ -1,0 +1,21 @@
+
+# Logs
+logs
+
+# Node modules
+node_modules
+
+# DS_store
+.DS_Store
+
+# dotenv environment variables file
+.env
+.env.test
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+
+dist
+build
+
+.vscode
