@@ -11,6 +11,7 @@ const CelulaSchema = new Mongoose.Schema({
   estado: { type: String, required: true },
 });
 
+// Metodo para la conversion de datos de consulta
 mongoToJson(CelulaSchema);
 
 export default Mongoose.model('celulas', CelulaSchema);

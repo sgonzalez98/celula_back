@@ -1,8 +1,6 @@
 import { ValidationError } from 'express-validator';
 
-/**
- * Interface response validator para la request.
- */
+// Interface response validator para la request.
 interface IResponseValidator {
   hasErrors: boolean;
   message?: string;
