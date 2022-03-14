@@ -12,4 +12,4 @@ const UsuarioSchema = new Mongoose.Schema({
 // Metodo para la conversion de datos de consulta
 mongoToJson(UsuarioSchema);
 
-export default Mongoose.model('usuarios', UsuarioSchema);
+export const Usuario = Mongoose.model('usuarios', UsuarioSchema);
