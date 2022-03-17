@@ -8,18 +8,20 @@ import errorHandler from './utilities/errorHandler';
 import mongooseConnection from './utilities/mongoConnection';
 import swaggerOptions from './config/swaggerOptions';
 
+// Rutas
+import usuarioRoutes from './routes/usuario';
+
 const app = express();
 
-// Middlewares
+// Registramos Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(authJwt());
 app.use(errorHandler);
 
-app.get('/', (request: Request, response: Response) => {
-  response.send('Hello World!')
-})
+// Registramos rutas
+app.use(`${baseUrlApi}usuario`, usuarioRoutes);
 
 // Swagger documentation.
 const swagger: RequestHandler = swaggerUi.setup(swaggerOptions);
@@ -30,4 +32,4 @@ mongooseConnection();
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
-})
+});

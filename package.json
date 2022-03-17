@@ -11,11 +11,13 @@
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "express-jwt": "^6.1.1",
     "express-validator": "^6.14.0",
+    "http-status-codes": "^2.2.0",
     "moment": "^2.29.1",
     "mongoose": "^6.2.5",
     "morgan": "^1.10.0",
@@ -23,6 +25,7 @@
     "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/express-jwt": "^6.0.4",

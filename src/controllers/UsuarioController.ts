@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
-import { Usuario } from "../models/usuario";
+import bcrypt from 'bcryptjs';
+import Usuario from "../models/usuario";
+import { validateRequest } from "../utilities";
+import { StatusCodes } from "http-status-codes";
+import { internalErrors } from "errors";
 
 class UsuarioController {
 
@@ -13,7 +17,9 @@ class UsuarioController {
    *        securitySchemes:
    *          authorization: 
    *            scheme: bearer
-   *            bearerFormat: JWT  
+   *            bearerFormat: JWT
+   *        security:
+   *          - authorization: []
    *        responses:
    *          '200': { description: Un Array JSON con el valor final. }
    *          '400': { description: Los parametros del body son erroneos. }
@@ -122,7 +128,35 @@ class UsuarioController {
    *          '500': { description: Error de servidor. }
    */
      public register(request: Request, response: Response) : Response {
-      return response.send('Hola');
+
+      try {
+        validateRequest(request);
+    
+        const passwordHash = bcrypt.hashSync(request.body.clave, 10);
+
+        const usuario = new Usuario({
+          nombre: request.body.nombre,
+          usuario: request.body.usuario,
+          clave: passwordHash,
+          isAdmin: request.body.isAdmin,
+          estado: 'Activo',
+        });
+
+        const resp = usuario.save()
+        .then((user) => {
+          return user;
+        }).catch((err: Error) => {
+          throw new Error("El usuario no pudo ser creado" + err.message);
+        });
+
+        if (!resp) {
+          throw new Error("El usuario no pudo ser creado");
+        }
+
+        return response.status(StatusCodes.CREATED).send(usuario);
+      } catch (error) {
+        return internalErrors(error, response);
+      }
     }
 
   /**
