@@ -13,7 +13,7 @@ class ValidateRequestError extends Error {
 // Funcion para manejo de errores
 function internalErrors (error: unknown | Error | ValidateRequestError, response: Response) : Response {
   if (error instanceof ValidateRequestError) {
-    return response.status(StatusCodes.CONFLICT).json({ success: false, message: JSON.parse(error.message) });
+    return response.status(StatusCodes.BAD_REQUEST).json({ success: false, message: JSON.parse(error.message) });
   }
   if (error instanceof Error) {
     return response.status(StatusCodes.CONFLICT).json({ success: false, message: error.message });

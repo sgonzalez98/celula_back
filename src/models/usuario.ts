@@ -4,7 +4,7 @@ import { mongoToJson } from '../utilities';
 interface IUsuario {
   nombre: string,
   usuario: string,
-  clave?: string,
+  clave: string,
   isAdmin: number,
   estado: string,
 };

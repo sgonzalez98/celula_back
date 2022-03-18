@@ -10,7 +10,11 @@
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
-  "rules": {},
+  "rules": {
+    "@typescript-eslint/object-curly-spacing": ["error", "always"],
+    "@typescript-eslint/comma-spacing": ["error", { "before": false, "after": true }]
+
+  },
   "env": {
     "node": true
   }
