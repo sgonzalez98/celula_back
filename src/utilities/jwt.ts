@@ -5,7 +5,7 @@ export default function authJwt() {
 
   return expressJwt({ secret: jwtSecret, algorithms: ['HS256'] }).unless({
     path: [
-      new RegExp(`${baseUrlApi}documentation(.*)/`),
+      new RegExp(`${baseUrlApi}documentation(.*)`),
       `${baseUrlApi}usuario/login`,
     ]
   })

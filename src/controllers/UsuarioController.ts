@@ -17,9 +17,7 @@ class UsuarioController {
    *        summary: Endpoint para recuperar los usuarios registrados.
    *        description: Retorna un json con los usuarios registrados
    *        securitySchemes:
-   *          authorization: 
-   *            scheme: bearer
-   *            bearerFormat: JWT
+   *          authorization: { scheme: bearer, bearerFormat: JWT }
    *        security:
    *          - authorization: []
    *        responses:
@@ -28,11 +26,10 @@ class UsuarioController {
    *          '401': { description: Usuario no autenticado. }
    *          '500': { description: Error de servidor. }
    */
-  public index(request: Request, response: Response) : Response {
-
+  public async index(request: Request, response: Response) {
+    console.log("Entra a request");
     try {
-      validateRequest(request);
-      const userList = Usuario.find().select('-clave');
+      const userList = await Usuario.find().select('-clave');
 
       if(!userList) {
         response.status(500).json({ success: false });
@@ -49,34 +46,37 @@ class UsuarioController {
    *  paths:
    *    /usuario/{id}:
    *      post:
-   *        summary: Endpoint para recuperar los usuarios registrados.
-   *        description: Retorna un json informando el estado del proceso
+   *        summary: Endpoint para buscar un usuario especifico.
+   *        description: Retorna un json con el usuario buscado
    *        securitySchemes:
-   *          authorization: 
-   *            scheme: bearer
-   *            bearerFormat: JWT
+   *          authorization: { scheme: bearer, bearerFormat: JWT }
    *        security:
    *          - authorization: []
    *        parameters:
    *          - in: path
    *            name: id
    *            required: true
-   *            schema:
-   *              type: integer
+   *            schema: { type: integer }
    *        responses:
    *          '200': { description: Un Array JSON con el valor final. }
    *          '400': { description: Los parametros del body son erroneos. }
    *          '401': { description: Usuario no autenticado. }
    *          '500': { description: Error de servidor. }
    */
-  public find(request: Request, response: Response) : Response {
-    const user = Usuario.findById(request.params.id).select('-clave');
+  public async find(request: Request, response: Response) {
+    try {
+      validateRequest(request);
 
-    if(!user) {
-      response.status(500).json({ success: false, message: 'El usuario con el id enviado no existe' });
+      const user = await Usuario.findById(request.params.id).select('-clave');
+
+      if(!user) {
+        response.status(500).json({ success: false, message: 'El usuario con el id enviado no existe' });
+      }
+
+      return response.status(200).send(user);
+    } catch (error) {
+      return internalErrors(error, response);
     }
-
-    return response.status(200).send(user);
   }
 
   /**
@@ -113,7 +113,7 @@ class UsuarioController {
         throw new Error("Credenciales incorrectas");
       }
 
-      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, jwtSecret, { expiresIn: '15d' });
+      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, jwtSecret, { expiresIn: '1d' });
       return response.status(StatusCodes.OK).json({ nombre: user.nombre, token });
     } catch (error) {
       return internalErrors(error, response);
@@ -128,9 +128,7 @@ class UsuarioController {
    *        summary: Endpoint para registrar usuarios
    *        description: Registra un usuario con los datos necesarios de este
    *        securitySchemes:
-   *          authorization: 
-   *            scheme: bearer
-   *            bearerFormat: JWT
+   *          authorization: { scheme: bearer, bearerFormat: JWT }
    *        security:
    *          - authorization: []
    *        requestBody:
@@ -181,12 +179,10 @@ class UsuarioController {
    *  paths:
    *    /usuario:
    *      put:
-   *        summary: Endpoint para recuperar los usuarios registrados.
-   *        description: Retorna un json informando el estado del proceso
+   *        summary: Endpoint para actualizar los usuarios registrados.
+   *        description: Retorna un json informando con la respectiva informacion
    *        securitySchemes:
-   *          authorization: 
-   *            scheme: bearer
-   *            bearerFormat: JWT
+   *          authorization: { scheme: bearer, bearerFormat: JWT }
    *        security:
    *          - authorization: []
    *        requestBody:
@@ -195,22 +191,44 @@ class UsuarioController {
    *              schema:
    *                type: object
    *                properties:
-   *                  producto_id: { type: 'integer', example: 4 }
-   *                  cliente_id: { type: 'integer', example: 2 }
-   *                  bodega_id: { type: 'integer', example: 30 }
-   *                  sitioentrega_id: { type: 'integer', example: 3 }
-   *                  sucursal_id: { type: 'integer', example: 4 }
-   *                  cantidad: { type: 'numeric', example: 213.34 }
-   *                  valor: { type: 'numeric', example: 423.324 }
-   *                  fecha: { type: 'date', example: "2021-05-08" }
+   *                  nombre: { type: 'string', example: 'Juan' }
+   *                  usuario: { type: 'string', example: 'juan' }
+   *                  clave: { type: 'string', example: 'clave123' }
+   *                  isAdmin: { type: 'boolean', example: true }
+   *                  estado: { type: 'string', example: 'Activo | Inactivo' }
    *        responses:
    *          '200': { description: Un Array JSON con el valor final. }
    *          '400': { description: Los parametros del body son erroneos. }
    *          '401': { description: Usuario no autenticado. }
    *          '500': { description: Error de servidor. }
    */
-  public update(request: Request, response: Response) : Response {
-    return response.send('Hola');
+  public async update(request: Request, response: Response) {
+    try {
+      validateRequest(request);
+
+      const user = await Usuario.findById(request.params.id);
+      if (!user) {
+        throw new Error("No se encontro el usuario indicado");
+      }
+
+      user.nombre = String(request.body.nombre).toLowerCase();
+      user.usuario = String(request.body.usuario).toLowerCase();
+      user.isAdmin = request.body.isAdmin;
+      user.estado = request.body.estado;
+
+      if (request.body.clave) {
+        user.clave = bcrypt.hashSync(request.body.clave, 10);
+      }
+
+      const resp = await user.save();
+      if (!resp) {
+        throw new Error("El usuario no pudo ser creado");
+      }
+
+      return response.status(StatusCodes.OK).send(resp);
+    } catch (error) {
+      return internalErrors(error, response);
+    }
   }
 }
 

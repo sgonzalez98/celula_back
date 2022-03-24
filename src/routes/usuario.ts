@@ -1,10 +1,6 @@
 import { Router } from "express";
 import UsuarioController from "../controllers/UsuarioController";
-
-// Validator Requests
-import indexRequest from "../validators/usuarioController/indexRequest";
-import registerRequest from "../validators/usuarioController/registerRequest";
-import loginRequest from "../validators/usuarioController/loginRequest";
+import { loginRequest, registerRequest, findRequest, updateRequest } from '../validators/usuarioController';
 
 // Creamos router de Express
 const router = Router();
@@ -12,10 +8,10 @@ const router = Router();
 // Instanciamos Controladores
 const usuarioController = new UsuarioController();
 
-router.get('/', indexRequest, usuarioController.index);
-// router.get('/:id', indexRequest, usuarioController.index);
+router.get('/', usuarioController.index);
+router.get('/:id', findRequest, usuarioController.find);
 router.post('/login', loginRequest, usuarioController.login);
 router.post('/register', registerRequest, usuarioController.register);
-// router.put('/update/:id', indexRequest, usuarioController.index);
+router.put('/update/:id', updateRequest, usuarioController.update);
 
 export default router;
