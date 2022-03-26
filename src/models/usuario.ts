@@ -7,7 +7,7 @@ interface IUsuario {
   clave: string,
   isAdmin: number,
   estado: string,
-};
+}
 
 const UsuarioSchema = new Mongoose.Schema<IUsuario>({
   nombre: { type: String, required: true },

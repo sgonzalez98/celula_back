@@ -27,7 +27,6 @@ class UsuarioController {
    *          '500': { description: Error de servidor. }
    */
   public async index(request: Request, response: Response) {
-    console.log("Entra a request");
     try {
       const userList = await Usuario.find().select('-clave');
 
@@ -45,7 +44,7 @@ class UsuarioController {
    * @swagger
    *  paths:
    *    /usuario/{id}:
-   *      post:
+   *      get:
    *        summary: Endpoint para buscar un usuario especifico.
    *        description: Retorna un json con el usuario buscado
    *        securitySchemes:
@@ -56,7 +55,7 @@ class UsuarioController {
    *          - in: path
    *            name: id
    *            required: true
-   *            schema: { type: integer }
+   *            schema: { type: string }
    *        responses:
    *          '200': { description: Un Array JSON con el valor final. }
    *          '400': { description: Los parametros del body son erroneos. }
@@ -123,7 +122,7 @@ class UsuarioController {
   /**
    * @swagger
    *  paths:
-   *    /usuario/register:
+   *    /usuario:
    *      post:
    *        summary: Endpoint para registrar usuarios
    *        description: Registra un usuario con los datos necesarios de este
@@ -147,37 +146,37 @@ class UsuarioController {
    *          '401': { description: Usuario no autenticado. }
    *          '500': { description: Error de servidor. }
    */
-     public async register(request: Request, response: Response) {
+  public async register(request: Request, response: Response) {
 
-      try {
-        validateRequest(request);
+    try {
+      validateRequest(request);
 
-        const passwordHash = bcrypt.hashSync(request.body.clave, 10);
+      const passwordHash = bcrypt.hashSync(request.body.clave, 10);
 
-        const usuario = new Usuario({
-          nombre: String(request.body.nombre).toLowerCase(),
-          usuario: String(request.body.usuario).toLowerCase(),
-          clave: passwordHash,
-          isAdmin: request.body.isAdmin,
-          estado: 'Activo',
-        });
+      const usuario = new Usuario({
+        nombre: String(request.body.nombre).toLowerCase(),
+        usuario: String(request.body.usuario).toLowerCase(),
+        clave: passwordHash,
+        isAdmin: request.body.isAdmin,
+        estado: 'Activo',
+      });
 
-        const resp = await usuario.save();
+      const resp = await usuario.save();
 
-        if (!resp) {
-          throw new Error("El usuario no pudo ser creado");
-        }
-
-        return response.status(StatusCodes.CREATED).send(resp);
-      } catch (error) {
-        return internalErrors(error, response);
+      if (!resp) {
+        throw new Error("El usuario no pudo ser creado");
       }
+
+      return response.status(StatusCodes.CREATED).send(resp);
+    } catch (error) {
+      return internalErrors(error, response);
     }
+  }
 
   /**
    * @swagger
    *  paths:
-   *    /usuario:
+   *    /usuario/{id}:
    *      put:
    *        summary: Endpoint para actualizar los usuarios registrados.
    *        description: Retorna un json informando con la respectiva informacion
@@ -185,6 +184,11 @@ class UsuarioController {
    *          authorization: { scheme: bearer, bearerFormat: JWT }
    *        security:
    *          - authorization: []
+   *        parameters:
+   *          - in: path
+   *            name: id
+   *            required: true
+   *            schema: { type: string }
    *        requestBody:
    *          content:
    *            Application/json:
@@ -229,6 +233,40 @@ class UsuarioController {
     } catch (error) {
       return internalErrors(error, response);
     }
+  }
+
+  /**
+   * @swagger
+   *  paths:
+   *    /usuario/{id}:
+   *      delete:
+   *        summary: Endpoint para eliminar un usuario especifico.
+   *        description: Retorna un json con la respuesta
+   *        securitySchemes:
+   *          authorization: { scheme: bearer, bearerFormat: JWT }
+   *        security:
+   *          - authorization: []
+   *        parameters:
+   *          - in: path
+   *            name: id
+   *            required: true
+   *            schema: { type: string }
+   *        responses:
+   *          '200': { description: Un Array JSON con el valor final. }
+   *          '400': { description: Los parametros del body son erroneos. }
+   *          '401': { description: Usuario no autenticado. }
+   *          '500': { description: Error de servidor. }
+   */
+  public delete(request: Request, response: Response) {
+    Usuario.findByIdAndRemove(request.params.id).then((user) => {
+      if (user) {
+          return response.status(StatusCodes.OK).json({ success: true, message: 'El usuario se elimino correctamente' });
+      } else {
+          return response.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Usuario no encontrado" });
+      }
+    }).catch((err) => {
+      return internalErrors(err, response);
+    });
   }
 }
 
