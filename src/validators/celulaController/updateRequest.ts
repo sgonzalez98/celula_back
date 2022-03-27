@@ -1,15 +1,12 @@
 import { body, param, ValidationChain } from 'express-validator';
 
-const registerRequest: ValidationChain[] = [
+const updateRequest: ValidationChain[] = [
   param('id')
     .exists().withMessage('El id es requerido')
     .isString().withMessage('El id debe de ser de tipo texto'),
   body('ministerio')
     .exists().withMessage('El ministerio es requerido')
     .isString().withMessage('El nombre debe de ser de tipo texto'),
-  body('usuarioId')
-    .exists().withMessage('El usuario es requerido')
-    .isString().withMessage('El usuario debe de ser de tipo texto'),
   body('lugar')
     .exists().withMessage('El lugar es requerido')
     .isString().withMessage('El lugar debe de ser de tipo texto'),
@@ -27,4 +24,4 @@ const registerRequest: ValidationChain[] = [
     .isString().withMessage('El estado debe de ser de tipo texto'),
 ];
 
-export default registerRequest;
+export default updateRequest;
