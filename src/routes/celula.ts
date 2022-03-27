@@ -1,6 +1,6 @@
 import { Router } from "express";
 import CelulaController from "../controllers/CelulaController";
-import { findRequest, indexRequest, registerRequest, updateRequest } from "../validators/celulaController";
+import { findRequest, indexRequest, registerRequest, updateRequest } from "../validators/celula";
 
 // Creamos router de Express
 const router = Router();

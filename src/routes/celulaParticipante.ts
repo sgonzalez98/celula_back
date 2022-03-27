@@ -1,6 +1,6 @@
 import { Router } from "express";
 import CelulaParticipanteController from "../controllers/CelulaParticipanteController";
-import { findRequest, indexRequest, registerRequest, updateRequest } from "../validators/celulaParticipanteController";
+import { findRequest, indexRequest, registerRequest, updateRequest } from "../validators/celulaParticipante";
 
 // Creamos router de Express
 const router = Router();

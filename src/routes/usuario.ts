@@ -1,6 +1,6 @@
 import { Router } from "express";
 import UsuarioController from "../controllers/UsuarioController";
-import { loginRequest, registerRequest, findRequest, updateRequest } from '../validators/usuarioController';
+import { loginRequest, registerRequest, findRequest, updateRequest } from '../validators/usuario';
 
 // Creamos router de Express
 const router = Router();

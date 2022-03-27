@@ -4,7 +4,7 @@ const updateRequest: ValidationChain[] = [
   param('id')
     .exists().withMessage('El id es requerido')
     .isString().withMessage('El id debe de ser de tipo texto'),
-    body('celulaId')
+  body('celulaId')
     .exists().withMessage('La celulaId es requerido')
     .isString().withMessage('La celulaId debe de ser de tipo texto'),
   body('nombre')
