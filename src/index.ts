@@ -1,4 +1,4 @@
-import express, { Request, RequestHandler, Response } from 'express';
+import express, { RequestHandler } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';

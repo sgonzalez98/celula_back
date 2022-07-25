@@ -7,6 +7,7 @@ export default function authJwt() {
     path: [
       new RegExp(`${baseUrlApi}documentation(.*)`),
       `${baseUrlApi}usuario/login`,
+      `${baseUrlApi}usuario/register`,
     ]
   })
 }

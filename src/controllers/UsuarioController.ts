@@ -157,7 +157,7 @@ class UsuarioController {
         nombre: String(request.body.nombre).toLowerCase(),
         usuario: String(request.body.usuario).toLowerCase(),
         clave: passwordHash,
-        isAdmin: request.body.isAdmin,
+        isAdmin: false,
         estado: 'Activo',
       });
 
