@@ -161,13 +161,15 @@ class UsuarioController {
         estado: 'Activo',
       });
 
-      const resp = await usuario.save();
+      const user = await usuario.save();
 
-      if (!resp) {
+      if (!user) {
         throw new Error("El usuario no pudo ser creado");
       }
 
-      return response.status(StatusCodes.CREATED).send(resp);
+      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, jwtSecret, { expiresIn: '1d' });
+      const dataUser = user.toObject();
+      return response.status(StatusCodes.CREATED).send({ ...dataUser, token });
     } catch (error) {
       return internalErrors(error, response);
     }
