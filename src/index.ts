@@ -10,6 +10,7 @@ import swaggerOptions from './config/swaggerOptions';
 
 // Rutas
 import usuarioRoutes from './routes/usuario';
+import celulaRoutes from './routes/celula';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(errorHandler);
 
 // Registramos rutas
 app.use(`${baseUrlApi}usuario`, usuarioRoutes);
+app.use(`${baseUrlApi}celula`, celulaRoutes);
 
 // Swagger documentation.
 const swagger: RequestHandler = swaggerUi.setup(swaggerOptions);

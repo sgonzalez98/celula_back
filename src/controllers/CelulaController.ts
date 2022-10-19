@@ -34,7 +34,7 @@ class CelulaController {
     try {
       validateRequest(request);
 
-      const celulaList = await Celula.find({ usuarioId: request.body.usuarioId });
+      const celulaList = await Celula.find({ usuarioId: request.query.usuarioId });
 
       if(!celulaList) {
         response.status(500).json({ success: false });
