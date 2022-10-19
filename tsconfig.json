@@ -9,7 +9,7 @@
     "module": "commonjs",                                /* Specify what module code is generated. */
 
     /* Emit */
-    "outDir": "dist",                                   /* Specify an output folder for all emitted files. */
+    "outDir": "build",                                   /* Specify an output folder for all emitted files. */
     "baseUrl": "src",
 
     /* Interop Constraints */
