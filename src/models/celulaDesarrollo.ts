@@ -1,16 +1,23 @@
 import Mongoose from 'mongoose';
 import { mongoToJson } from '../utilities';
 
-const CelulaDesarrolloSchema = new Mongoose.Schema({
+interface IDesarrollo {
+  celulaId: string | undefined,
+  fecha: Date,
+  tema: string,
+  textosBiblicos: string,
+  observacion: string
+}
+
+const CelulaDesarrolloSchema = new Mongoose.Schema<IDesarrollo>({
   celulaId: { type: Mongoose.Types.ObjectId, ref: 'celulas', required: true },
-  fecha: { type: String, required: true },
-  hora: { type: String, required: true },
+  fecha: { type: Date, required: true },
   tema: { type: String, required: true },
-  textosBibiclos: { type: String },
+  textosBiblicos: { type: String },
   observacion: { type: String },
 });
 
 // Metodo para la conversion de datos de consulta
 mongoToJson(CelulaDesarrolloSchema);
 
-export default Mongoose.model('celulas_desarrollos', CelulaDesarrolloSchema);
+export default Mongoose.model<IDesarrollo>('celulas_desarrollos', CelulaDesarrolloSchema);
