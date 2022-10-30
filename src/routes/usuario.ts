@@ -13,6 +13,7 @@ router.get('/:id', findRequest, usuarioController.find);
 router.put('/:id', updateRequest, usuarioController.update);
 router.delete('/:id', findRequest, usuarioController.delete);
 router.post('/login', loginRequest, usuarioController.login);
+router.post('/verify', usuarioController.verify);
 router.post('/register', registerRequest, usuarioController.register);
 
 export default router;

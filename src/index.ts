@@ -19,7 +19,6 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(authJwt());
-app.use(errorHandler);
 
 // Registramos rutas
 app.use(`${baseUrlApi}usuario`, usuarioRoutes);
@@ -28,6 +27,9 @@ app.use(`${baseUrlApi}celula`, celulaRoutes);
 // Swagger documentation.
 const swagger: RequestHandler = swaggerUi.setup(swaggerOptions);
 app.use(`${baseUrlApi}documentation`, swaggerUi.serve, swagger);
+
+// Middleware Errores
+app.use(errorHandler);
 
 // Realizamos conexion a MongoDD
 mongooseConnection();

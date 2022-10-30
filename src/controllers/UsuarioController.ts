@@ -4,8 +4,9 @@ import Usuario from "../models/usuario";
 import { validateRequest } from "../utilities";
 import { StatusCodes } from "http-status-codes";
 import { internalErrors } from "../errors";
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { jwtSecret } from "../config/global";
+import UsuarioToken from "../models/usuarioToken";
 
 class UsuarioController {
 
@@ -112,12 +113,68 @@ class UsuarioController {
         throw new Error("Credenciales incorrectas");
       }
 
-      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, jwtSecret, { expiresIn: '1d' });
-      return response.status(StatusCodes.OK).json({ nombre: user.nombre, token });
+      const token = jwt.sign({ user }, jwtSecret, { expiresIn: '1d' });
+
+      let usuarioToken = await UsuarioToken.findOne({ usuarioId: user.id });
+      if (usuarioToken) {
+        usuarioToken.token = token;
+      } else {
+        usuarioToken = new UsuarioToken({ usuarioId: user.id, token });
+      }
+      await usuarioToken.save();
+
+      if (!usuarioToken.id) {
+        throw new Error("Ocurrio un error al intentar registrar el token");
+      }
+
+      return response.status(StatusCodes.OK).json({ user, token });
     } catch (error) {
       return internalErrors(error, response);
     }
   }
+
+    /**
+   * @swagger
+   *  paths:
+   *    /usuario/verify:
+   *      post:
+   *        summary: Endpoint para verificacion del token
+   *        responses:
+   *          '200': { description: Un Array JSON con el valor final. }
+   *          '401': { description: Usuario no autenticado. }
+   *          '500': { description: Error de servidor. }
+   */
+     public async verify(request: Request, response: Response) {
+      try {
+
+        const bearerToken = request.header('authorization');
+        if (!bearerToken) {
+          return response.status(StatusCodes.UNAUTHORIZED).json({ success: false, token: null });
+        }
+        const bearer = bearerToken.split(' ');
+        const token = bearer[1];
+
+        const tokenData = jwt.verify(token, jwtSecret) as JwtPayload;
+        const { user } = tokenData;
+
+        if (!user) {
+          throw new Error("No se encontro la información del token");
+        }
+  
+        const usuarioToken = await UsuarioToken.findOne({ usuarioId: user.id });
+        if (!usuarioToken) {
+          throw new Error("No se encontro el token asociado al usuario");
+        }
+
+        if (usuarioToken.token != token) {
+          throw new Error("El token no es el ultimo asignado");
+        }
+  
+        return response.status(StatusCodes.OK).json({ user, token });
+      } catch (error) {
+        return internalErrors(error, response);
+      }
+    }
 
   /**
    * @swagger
@@ -169,6 +226,14 @@ class UsuarioController {
 
       const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, jwtSecret, { expiresIn: '1d' });
       const dataUser = user.toObject();
+
+      const usuarioToken = new UsuarioToken({ usuarioId: user.id, token });
+      await usuarioToken.save();
+
+      if (!usuarioToken.id) {
+        throw new Error("Ocurrio un error al intentar registrar el token");
+      }
+
       return response.status(StatusCodes.CREATED).send({ ...dataUser, token });
     } catch (error) {
       return internalErrors(error, response);

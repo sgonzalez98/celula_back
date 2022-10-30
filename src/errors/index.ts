@@ -18,7 +18,7 @@ function internalErrors (error: unknown | Error | ValidateRequestError, response
   if (error instanceof Error) {
     return response.status(StatusCodes.CONFLICT).json({ success: false, message: error.message });
   }
-  return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Ocurrio un error en el servidor");
+  return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Ocurrio un error en el servidor' });
 };
 
 export { internalErrors, ValidateRequestError };
