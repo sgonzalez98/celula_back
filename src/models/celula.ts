@@ -1,6 +1,4 @@
 import Mongoose from 'mongoose';
-import { mongoToJson } from '../utilities';
-
 interface ICelula {
   ministerio: string,
   usuarioId: string | undefined,
@@ -19,9 +17,22 @@ const CelulaSchema = new Mongoose.Schema<ICelula>({
   hora: { type: String, required: true },
   descripcion: { type: String },
   estado: { type: String, required: true },
+}, { versionKey: false, id: true });
+
+CelulaSchema.set('toJSON', {
+  getters: true,
+  virtuals: true,
+  transform: function(_, ret) {
+    delete ret['_id'];
+    return ret;
+  }
 });
 
-// Metodo para la conversion de datos de consulta
-mongoToJson(CelulaSchema);
+CelulaSchema.virtual('usuario', {
+  ref: 'usuarios',
+  localField: 'usuarioId',
+  foreignField: '_id',
+  justOne: true,
+});
 
-export default Mongoose.model<ICelula>('celulas', CelulaSchema);
+export default Mongoose.model('celulas', CelulaSchema);

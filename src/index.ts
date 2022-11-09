@@ -11,6 +11,7 @@ import swaggerOptions from './config/swaggerOptions';
 // Rutas
 import usuarioRoutes from './routes/usuario';
 import celulaRoutes from './routes/celula';
+import celulaParticipanteRoutes from './routes/celulaParticipante';
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(authJwt());
 // Registramos rutas
 app.use(`${baseUrlApi}usuario`, usuarioRoutes);
 app.use(`${baseUrlApi}celula`, celulaRoutes);
+app.use(`${baseUrlApi}celulaparticipante`, celulaParticipanteRoutes);
 
 // Swagger documentation.
 const swagger: RequestHandler = swaggerUi.setup(swaggerOptions);

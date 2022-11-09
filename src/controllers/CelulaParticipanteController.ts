@@ -34,7 +34,7 @@ class CelulaParticipanteController {
     try {
       validateRequest(request);
 
-      const celulaParticipanteList = await CelulaParticipante.find({ celulaId: request.body.celulaId });
+      const celulaParticipanteList = await CelulaParticipante.find({ celulaId: request.query.celulaId });
 
       if(!celulaParticipanteList) {
         response.status(500).json({ success: false });

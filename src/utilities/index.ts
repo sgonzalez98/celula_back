@@ -10,7 +10,7 @@ export const mongoToJson = (schema: Schema) => {
   return schema.method('toJSON', function obj() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { __v, _id: id, ...object } = this.toObject();
-    return { ...object, id };
+    return { id, ...object };
   });
 };
 

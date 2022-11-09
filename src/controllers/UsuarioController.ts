@@ -133,7 +133,7 @@ class UsuarioController {
     }
   }
 
-    /**
+  /**
    * @swagger
    *  paths:
    *    /usuario/verify:
@@ -144,37 +144,73 @@ class UsuarioController {
    *          '401': { description: Usuario no autenticado. }
    *          '500': { description: Error de servidor. }
    */
-     public async verify(request: Request, response: Response) {
-      try {
+  public async verify(request: Request, response: Response) {
+    try {
 
-        const bearerToken = request.header('authorization');
-        if (!bearerToken) {
-          return response.status(StatusCodes.UNAUTHORIZED).json({ success: false, token: null });
-        }
-        const bearer = bearerToken.split(' ');
-        const token = bearer[1];
-
-        const tokenData = jwt.verify(token, jwtSecret) as JwtPayload;
-        const { user } = tokenData;
-
-        if (!user) {
-          throw new Error("No se encontro la información del token");
-        }
-  
-        const usuarioToken = await UsuarioToken.findOne({ usuarioId: user.id });
-        if (!usuarioToken) {
-          throw new Error("No se encontro el token asociado al usuario");
-        }
-
-        if (usuarioToken.token != token) {
-          throw new Error("El token no es el ultimo asignado");
-        }
-  
-        return response.status(StatusCodes.OK).json({ user, token });
-      } catch (error) {
-        return internalErrors(error, response);
+      const bearerToken = request.header('authorization');
+      if (!bearerToken) {
+        return response.status(StatusCodes.UNAUTHORIZED).json({ success: false, token: null });
       }
+      const bearer = bearerToken.split(' ');
+      const token = bearer[1];
+
+      const tokenData = jwt.verify(token, jwtSecret) as JwtPayload;
+      const { user } = tokenData;
+
+      if (!user) {
+        throw new Error("No se encontro la información del token");
+      }
+
+      const usuarioToken = await UsuarioToken.findOne({ usuarioId: user.id });
+      if (!usuarioToken) {
+        throw new Error("No se encontro el token asociado al usuario");
+      }
+
+      if (usuarioToken.token != token) {
+        throw new Error("El token no es el ultimo asignado");
+      }
+
+      return response.status(StatusCodes.OK).json({ user, token });
+    } catch (error) {
+      return internalErrors(error, response);
     }
+  }
+
+  /**
+   * @swagger
+   *  paths:
+   *    /usuario/logout:
+   *      post:
+   *        summary: Endpoint para verificacion del token
+   *        responses:
+   *          '200': { description: Un Array JSON con el valor final. }
+   *          '401': { description: Usuario no autenticado. }
+   *          '500': { description: Error de servidor. }
+   */
+  public async logout(request: Request, response: Response) {
+    try {
+
+      const bearerToken = request.header('authorization');
+      if (!bearerToken) {
+        return response.status(StatusCodes.UNAUTHORIZED).json({ success: false, token: null });
+      }
+      const bearer = bearerToken.split(' ');
+      const token = bearer[1];
+
+      const tokenData = jwt.verify(token, jwtSecret) as JwtPayload;
+      const { user } = tokenData;
+
+      if (!user) {
+        throw new Error("No se encontro la información del token");
+      }
+
+      await UsuarioToken.deleteOne({ usuarioId: user.id });
+
+      return response.status(StatusCodes.OK).json({ success: true });
+    } catch (error) {
+      return internalErrors(error, response);
+    }
+  }
 
   /**
    * @swagger

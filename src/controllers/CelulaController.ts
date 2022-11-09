@@ -72,7 +72,7 @@ class CelulaController {
     try {
       validateRequest(request);
 
-      const celula = await Celula.findById(request.params.id);
+      const celula = await Celula.findById(request.params.id).populate('usuario');
 
       if(!celula) {
         response.status(500).json({ success: false, message: 'La celula con el id enviado no existe' });

@@ -1,7 +1,7 @@
-import { ValidationChain, body } from 'express-validator';
+import { ValidationChain, query } from 'express-validator';
 
 const indexRequest: ValidationChain[] = [
-  body('celulaId')
+  query('celulaId')
     .exists().withMessage('La celulaId es requerido')
     .isString().withMessage('La celulaId debe de ser de tipo texto'),
 ];
